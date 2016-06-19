@@ -23,20 +23,21 @@ public class ChatTextAdapter extends RecyclerView.Adapter<ChatTextAdapter.ViewHo
     public ChatTextAdapter(Context context, List<ChatText> data) {
         this.mContext = context;
         this.mData = data;
-        mInflater = LayoutInflater.from(context);
+        this.mInflater = LayoutInflater.from(mContext);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ViewHolder holder = null;
         View itemView = null;
+
         switch (viewType) {
             case ChatText.USER:
-                itemView = mInflater.inflate(R.layout.right_layout, parent);
+                itemView = mInflater.inflate(R.layout.right_layout, null);
                 holder = new RightViewHolder(itemView);
                 break;
             case ChatText.ROBOT:
-                itemView = mInflater.inflate(R.layout.left_layout, parent);
+                itemView = mInflater.inflate(R.layout.left_layout, null);
                 holder = new LeftViewHolder(itemView);
                 break;
         }

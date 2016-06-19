@@ -3,6 +3,7 @@ package com.xkc.chatrobot.activity;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -21,7 +22,9 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -37,6 +40,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private RecyclerView chat_rv;
+    private LinearLayoutManager linearLayoutManager;
     private EditText chat_et;
     private Button send_btn;
 
@@ -62,7 +66,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         send_btn = (Button) findViewById(R.id.send_btn);
 
         chat_list = new ArrayList<>();
-        chat_list.add(new ChatText(ChatText.ROBOT,"Welcome",Util.getTime()));
+
+        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        linearLayoutManager.setStackFromEnd(true);
+
     }
 
 
@@ -70,7 +78,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         send_btn.setOnClickListener(this);
 
         adapter = new ChatTextAdapter(this,chat_list);
+        chat_rv.setLayoutManager(linearLayoutManager);
         chat_rv.setAdapter(adapter);
+
+        chat_list.add(new ChatText(ChatText.ROBOT,"Welcome",Util.getTime()));
+        adapter.notifyDataSetChanged();
 
     }
 
@@ -79,8 +91,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.send_btn:
                 send_to_server();
+
                 break;
         }
+
+        chat_et.setText("");
     }
 
     /**
@@ -93,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         chat_list.add(chatText);//add user's chat text to chat list
         adapter.notifyDataSetChanged();
+        chat_rv.scrollToPosition(chat_list.size() - 1);
 
         MyTask task = new MyTask(){
             @Override
@@ -100,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 parse_text_from_server(s);
             }
         };
-        task.execute(Const.turing_url, Const.key, text);
+        task.execute(Const.turing_url, Const.new_key, text);
 
     }
 
@@ -119,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ChatText chatText = new ChatText(ChatText.ROBOT,text,time);
                 chat_list.add(chatText);
                 adapter.notifyDataSetChanged();
+
+                chat_rv.scrollToPosition(chat_list.size() - 1);
             }else {
                 Log.e("====>","parse text from server occurred error," + text);
             }
@@ -148,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             String requestParams = jsonObject.toString();
 
-
             URL url = null;
             HttpURLConnection connection = null;
             BufferedReader reader = null;
@@ -162,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setInstanceFollowRedirects(false);
+                connection.setRequestProperty("Content-type","application/json");
 
                 connection.connect();
                 writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
@@ -171,7 +189,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String line = "";
-
                 while ((line = reader.readLine()) != null){
                     result += line;
                 }
