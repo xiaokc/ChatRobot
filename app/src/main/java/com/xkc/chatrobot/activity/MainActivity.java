@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send_btn:
-                send_to_server();
+                send_to_local_server();
 
                 break;
         }
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * send user's chat text to server
      */
-    private void send_to_server() {
+    private void send_to_tuling() {
         String text = chat_et.getText().toString();
         String time = Util.getTime();
         ChatText chatText = new ChatText(ChatText.USER, text, time);
@@ -118,6 +118,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         };
         task.execute(Const.turing_url, Const.new_key, text);
 
+    }
+
+    private void send_to_local_server(){
+        String text = chat_et.getText().toString();
+        String time = Util.getTime();
+        ChatText chatText = new ChatText(ChatText.USER, text, time);
+
+        chat_list.add(chatText);//add user's chat text to chat list
+        adapter.notifyDataSetChanged();
+        chat_rv.scrollToPosition(chat_list.size() - 1);
+
+        MyTask task = new MyTask(){
+            @Override
+            protected void onPostExecute(String s) {
+                parse_text_from_server(s);
+            }
+        };
+        task.execute(Const.local_server, Const.new_key, text);
     }
 
     /**
@@ -158,8 +176,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             JSONObject jsonObject = new JSONObject();
             try {
-                jsonObject.put("key", key);
-                jsonObject.put("info", info);
+                jsonObject.accumulate("key", key);
+                jsonObject.accumulate("info", info);
             } catch (JSONException e) {
                 Log.e("====>", "Post JSONException occur: " + e.getMessage());
             }
@@ -171,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             BufferedReader reader = null;
             BufferedWriter writer = null;
 
+            Log.i("====>","requestParams="+requestParams);
             try {
                 url = new URL(turing_url);
                 connection = (HttpURLConnection) url.openConnection();
@@ -193,7 +212,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     result += line;
                 }
 
-            } catch (IOException e) {
+                Log.i("====>","requestParams="+requestParams+",result="+result);
+            }
+            catch (IOException e) {
                 Log.e("====>", "IOException occur: " + e.getMessage());
             } finally {
                 if (connection != null) {
