@@ -17,18 +17,7 @@ import com.xkc.chatrobot.Helper.Const;
 import com.xkc.chatrobot.R;
 import com.xkc.chatrobot.callbacks.RegisterCallback;
 import com.xkc.chatrobot.presenter.RegisterPresenter;
-import com.xkc.chatrobot.tasks.MyAsyncTask;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -37,8 +26,6 @@ import java.util.HashMap;
 
 public class SignInActivity extends AppCompatActivity implements View.OnClickListener{
     private final String TAG = SignInActivity.class.getSimpleName();
-    private TextInputLayout username_layout;
-    private TextInputLayout password_layout;
     private EditText username_et;
     private EditText password_et;
     private Button register_btn;
@@ -61,10 +48,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void initView() {
-        username_layout = (TextInputLayout) findViewById(R.id.username_layout);
         username_et = (EditText) findViewById(R.id.username_et);
 
-        password_layout = (TextInputLayout) findViewById(R.id.password_layout);
         password_et = (EditText) findViewById(R.id.password_et);
 
         register_btn = (Button) findViewById(R.id.register_btn);
