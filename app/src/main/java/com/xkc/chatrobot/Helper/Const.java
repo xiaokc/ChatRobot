@@ -7,10 +7,11 @@ public class Const {
     public static final String turing_url = "http://www.tuling123.com/openapi/api";
     public static final String local_server = "http://10.3.200.10:5000";
     public static final String key = "da89ff52e58c5ade5acbcb3c7bb35c8c";
-    public static final String new_key = "3d89ec012826fbf85e7a018daec73026";
+    public static final String tuling_key = "3d89ec012826fbf85e7a018daec73026";
     public static final int connect_timeout = 60000;
     public static final String register_url = local_server + "/register";
     public static final String login_url = local_server +"/login";
+    public static final String chat_url = local_server +"/chat";
 
     public static final String NO_USERID = "没有userid";
     public static final String REGISTER_FAIL = "注册失败";
