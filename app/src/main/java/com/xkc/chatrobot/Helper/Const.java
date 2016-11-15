@@ -17,5 +17,7 @@ public class Const {
     public static final String REGISTER_SUCCESS = "注册成功";
     public static final String USER_EXISTED = "用户名已存在";
 
+    public static final String NULL_PARAMS = "参数为NULL";
+
 
 }
