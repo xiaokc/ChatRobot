@@ -77,11 +77,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initEvent() {
         send_btn.setOnClickListener(this);
 
-        adapter = new ChatTextAdapter(this,chat_list);
+        adapter = new ChatTextAdapter(this, chat_list);
         chat_rv.setLayoutManager(linearLayoutManager);
         chat_rv.setAdapter(adapter);
 
-        chat_list.add(new ChatText(ChatText.ROBOT,"Welcome",Util.getTime()));
+        chat_list.add(new ChatText(ChatText.ROBOT, "Welcome", Util.getTime()));
         adapter.notifyDataSetChanged();
 
     }
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adapter.notifyDataSetChanged();
         chat_rv.scrollToPosition(chat_list.size() - 1);
 
-        MyTask task = new MyTask(){
+        MyTask task = new MyTask() {
             @Override
             protected void onPostExecute(String s) {
                 parse_text_from_server(s);
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void send_to_local_server(){
+    private void send_to_local_server() {
         String text = chat_et.getText().toString();
         String time = Util.getTime();
         ChatText chatText = new ChatText(ChatText.USER, text, time);
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adapter.notifyDataSetChanged();
         chat_rv.scrollToPosition(chat_list.size() - 1);
 
-        MyTask task = new MyTask(){
+        MyTask task = new MyTask() {
             @Override
             protected void onPostExecute(String s) {
                 parse_text_from_server(s);
@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * parse json text from server-end to Robot's chat text
+     *
      * @param s
      */
     private void parse_text_from_server(String s) {
@@ -148,15 +149,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String code = jsonObject.getString("code");
             String text = jsonObject.getString("text");
 
-            if (code.equals("100000")){
+            if (code.equals("100000")) {
                 String time = Util.getTime();
-                ChatText chatText = new ChatText(ChatText.ROBOT,text,time);
+                ChatText chatText = new ChatText(ChatText.ROBOT, text, time);
                 chat_list.add(chatText);
                 adapter.notifyDataSetChanged();
 
                 chat_rv.scrollToPosition(chat_list.size() - 1);
-            }else {
-                Log.e("====>","parse text from server occurred error," + text);
+            } else {
+                Log.e("====>", "parse text from server occurred error," + text);
             }
         } catch (JSONException e) {
             Log.e("====>", "Parse JSONException occur: " + e.getMessage());
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             BufferedReader reader = null;
             BufferedWriter writer = null;
 
-            Log.i("====>","requestParams="+requestParams);
+            Log.i("====>", "requestParams=" + requestParams);
             try {
                 url = new URL(turing_url);
                 connection = (HttpURLConnection) url.openConnection();
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
                 connection.setInstanceFollowRedirects(false);
-                connection.setRequestProperty("Content-type","application/json");
+                connection.setRequestProperty("Content-type", "application/json");
 
                 connection.connect();
                 writer = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
@@ -208,13 +209,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String line = "";
-                while ((line = reader.readLine()) != null){
+                while ((line = reader.readLine()) != null) {
                     result += line;
                 }
 
-                Log.i("====>","requestParams="+requestParams+",result="+result);
-            }
-            catch (IOException e) {
+                Log.i("====>", "requestParams=" + requestParams + ",result=" + result);
+            } catch (IOException e) {
                 Log.e("====>", "IOException occur: " + e.getMessage());
             } finally {
                 if (connection != null) {
