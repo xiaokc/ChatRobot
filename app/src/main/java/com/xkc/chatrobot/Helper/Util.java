@@ -19,7 +19,7 @@ public class Util {
         return time;
     }
 
-    public boolean hasNetwork(Context context){
+    public static boolean hasNetwork(Context context){
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = manager.getActiveNetworkInfo();
         if (info == null || !info.isConnected()) {
