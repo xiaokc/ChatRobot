@@ -16,10 +16,15 @@ public class Const {
     public static final String REGISTER_FAIL = "注册失败";
     public static final String REGISTER_SUCCESS = "注册成功";
     public static final String USER_EXISTED = "用户名已存在";
+    public static final String NOT_SAME_PASSWORD = "两次密码不一样，请检查";
 
     public static final String NULL_PARAMS = "参数为NULL";
     public static final String NETWORK_ERROR = "网络错误";
     public static final String ERROR = "出错了";
+
+    public static final String LOGIN_SUCCESS = "登陆成功";
+    public static final String LOGIN_FAIL = "登录失败";
+    public static final String USER_NOT_EXISTED = "用户名不存在";
 
 
 }

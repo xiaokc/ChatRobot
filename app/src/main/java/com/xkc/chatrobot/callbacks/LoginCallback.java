@@ -5,4 +5,6 @@ package com.xkc.chatrobot.callbacks;
  */
 
 public interface LoginCallback {
+    void onFail(Exception e, Object obj);
+    void onSuccess(Exception e, Object obj);
 }
