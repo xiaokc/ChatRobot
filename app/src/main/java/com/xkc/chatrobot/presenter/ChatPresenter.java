@@ -25,13 +25,13 @@ import java.util.HashMap;
 
 public class ChatPresenter {
     private Context context;
-    private int userid;
+    private long userid;
     private String key;
     private String info;
     private final String TAG = ChatPresenter.class.getSimpleName();
     public ChatPresenter(Context context, HashMap<String,Object> params){
         this.context = context;
-        this.userid = (int) params.get("userid");
+        this.userid = (long) params.get("userid");
         this.key = (String) params.get("key");
         this.info = (String) params.get("info");
 

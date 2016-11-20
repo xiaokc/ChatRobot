@@ -93,6 +93,7 @@ public class RegisterPresenter {
                         Log.i(TAG, "requestParams=" + requestParams + ",result=" + result);
                     } catch (IOException e) {
                         Log.e(TAG, "IOException occur: " + e.getMessage());
+                        callback.onFail(e,e.getMessage());
                     } finally {
                         if (connection != null) {
                             connection.disconnect();
@@ -103,6 +104,7 @@ public class RegisterPresenter {
                                 writer.close();
                             }
                         } catch (IOException e) {
+                            callback.onFail(e,e.getMessage());
                             Log.e(TAG, "Writer Close IOException occur: " + e.getMessage());
                         }
 
@@ -112,6 +114,7 @@ public class RegisterPresenter {
                                 reader.close();
                             }
                         } catch (IOException e) {
+                            callback.onFail(e,e.getMessage());
                             Log.e(TAG, "Reader Close IOException occur: " + e.getMessage());
                         }
 
@@ -150,7 +153,7 @@ public class RegisterPresenter {
                 switch (jsonObject.getInt("state")){
                     case 0:
                         if (jsonObject.has("userid")){
-                            callback.onSuccess(null,jsonObject.getInt("userid"));
+                            callback.onSuccess(null,jsonObject.getLong("userid"));
                         }else {
                             callback.onFail(new Exception(Const.NO_USERID),Const.NO_USERID);
                         }

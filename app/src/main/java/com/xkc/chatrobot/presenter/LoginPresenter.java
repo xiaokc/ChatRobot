@@ -1,6 +1,7 @@
 package com.xkc.chatrobot.presenter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.xkc.chatrobot.Helper.Const;
@@ -29,6 +30,7 @@ public class LoginPresenter {
     private String username;
     private String password;
     private final String TAG = LoginPresenter.class.getSimpleName();
+
 
     public LoginPresenter(Context context, HashMap<String,String> params){
         this.context = context;
@@ -92,6 +94,7 @@ public class LoginPresenter {
 
                         Log.i(TAG, "requestParams=" + requestParams + ",result=" + result);
                     } catch (IOException e) {
+                        callback.onFail(e,e.getMessage());
                         Log.e(TAG, "IOException occur: " + e.getMessage());
                     } finally {
                         if (connection != null) {
@@ -103,6 +106,7 @@ public class LoginPresenter {
                                 writer.close();
                             }
                         } catch (IOException e) {
+                            callback.onFail(e,e.getMessage());
                             Log.e(TAG, "Writer Close IOException occur: " + e.getMessage());
                         }
 
@@ -112,6 +116,7 @@ public class LoginPresenter {
                                 reader.close();
                             }
                         } catch (IOException e) {
+                            callback.onFail(e,e.getMessage());
                             Log.e(TAG, "Reader Close IOException occur: " + e.getMessage());
                         }
 
