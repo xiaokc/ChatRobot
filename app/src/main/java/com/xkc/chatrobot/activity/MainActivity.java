@@ -2,6 +2,7 @@ package com.xkc.chatrobot.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -52,6 +53,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import cn.jpush.android.api.JPushInterface;
+
 import static com.xkc.chatrobot.Helper.Util.getTime;
 
 /**
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ChatTextAdapter adapter;
 
     private Intent intent;
-    private int userid;
+    private long userid;
 
     private TextWatcher textWatcher;//监控EditText的输入状态，如果有文字输入，右边的按钮变为“发送”，否则变为“语音”
     private RecognizerDialog mItaDialog = null;//听写UI
@@ -84,20 +87,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        intent = getIntent();
-        if (intent != null) {
-            userid = intent.getIntExtra("userid", -1);
-        }
-
         initView();
         initEvent();
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            int hasWritePermission = checkSelfPermission(Manifest.permission.RECORD_AUDIO);
-
-            if (hasWritePermission != PackageManager.PERMISSION_GRANTED){
+            int hasAudioPermission = checkSelfPermission(Manifest.permission.RECORD_AUDIO);
+            if (hasAudioPermission != PackageManager.PERMISSION_GRANTED){
                 requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},100);
+            }
+
+            int hasWritePermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (hasWritePermission != PackageManager.PERMISSION_GRANTED){
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},200);
             }
 
         }
@@ -154,7 +155,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chat_et.addTextChangedListener(textWatcher);
         contentString = "";
 
-
+        SharedPreferences preferences = getSharedPreferences("user_info",MODE_PRIVATE);
+        userid = preferences.getLong("userid",-1L);
 
 
     }
@@ -168,9 +170,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chat_rv.setLayoutManager(linearLayoutManager);
         chat_rv.setAdapter(adapter);
 
-        chat_list.add(new ChatText(ChatText.ROBOT, "Welcome", getTime()));
-        adapter.notifyDataSetChanged();
+        showChatList();
+    }
 
+    private void showChatList(){
+        chat_list.add(new ChatText(ChatText.ROBOT, "Welcome", getTime()));
+
+        intent = getIntent();
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null && bundle.containsKey(JPushInterface.EXTRA_ALERT)){
+                String message = bundle.getString(JPushInterface.EXTRA_ALERT);
+                chat_list.add(new ChatText(ChatText.ROBOT,message,getTime()));
+            }
+
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -288,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (string != null && ! string.equals("")) {
                 contentString += string;// 解析成文字
 
-                ChatText chatText = new ChatText( ChatText.USER, contentString,getTime());// 点击发送按钮发送的内容标识为用户状态
+                ChatText chatText = new ChatText(ChatText.USER, contentString,getTime());// 点击发送按钮发送的内容标识为用户状态
                 chat_list.add(chatText);
 //                dbManager.addListData(listData);//将获取到的数据添加到聊天记录数据库表中
                 adapter.notifyDataSetChanged();// 添加完数据之后需要进行重新适配，刷新
@@ -324,6 +340,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 return;
             }
+            case 200:{
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                }
+                return;
+            }
+
 
             // other 'case' lines to check for other
             // permissions this app might request

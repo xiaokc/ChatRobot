@@ -20,6 +20,10 @@ import com.xkc.chatrobot.presenter.LoginPresenter;
 import com.xkc.chatrobot.presenter.RegisterPresenter;
 
 import java.util.HashMap;
+import java.util.Set;
+
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
 
 /**
  * Created by xkc on 11/14/16.
@@ -42,7 +46,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     //是否已注册
     private boolean hasRegistered;
 
-    private int userid;
+    private long userid;
 
 
     @Override
@@ -72,7 +76,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         if (hasRegistered) {
             username_et.setText(preferences.getString("username", ""));
             password_et.setText(preferences.getString("password", ""));
-            userid = preferences.getInt("userid",-1);
+            userid = preferences.getLong("userid",-1L);
         }
     }
 
@@ -103,8 +107,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         public void onSuccess(Exception e, Object obj) {
             if (e == null) {
                 Toast.makeText(SignInActivity.this, Const.REGISTER_SUCCESS, Toast.LENGTH_LONG).show();
-                editor.putInt("userid", (Integer) obj);
+                Log.d(TAG,"register callback obj:"+obj.toString());
+                editor.putLong("userid", (Long) obj);
                 editor.commit();
+
+                userid = preferences.getLong("userid",-1L);
             } else {
                 Log.e(TAG, Const.REGISTER_FAIL + obj.toString());
             }
@@ -126,13 +133,22 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void onSuccess(Exception e, Object obj) {
             if (e == null) {
+
                 Toast.makeText(SignInActivity.this, Const.LOGIN_SUCCESS, Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                if (userid != -1)
-                    intent.putExtra("userid",userid);
+                Log.d(TAG,"userid="+userid);
+                if (userid != -1){
+                    //如果登陆成功，设置用户别名为userid
+                    JPushInterface.setAlias(getApplicationContext(), String.valueOf(userid), new TagAliasCallback() {
+                        @Override
+                        public void gotResult(int i, String s, Set<String> set) {
+                            Log.d(TAG,"set alias success!");
+                        }
+                    });
+                }
+
                 startActivity(intent);
-                Log.d(TAG,"userid:"+userid);
                 SignInActivity.this.finish();
             } else {
                 Log.e(TAG, Const.LOGIN_FAIL + obj.toString());
@@ -192,5 +208,17 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             login_tv.setVisibility(View.VISIBLE);
             go_register_tv.setVisibility(View.INVISIBLE);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        JPushInterface.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        JPushInterface.onPause(this);
     }
 }
