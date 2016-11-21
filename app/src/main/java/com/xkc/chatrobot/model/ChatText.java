@@ -12,6 +12,8 @@ public class ChatText {
     private String content;
     private String time;
 
+    public ChatText(){}
+
     public ChatText(int flag, String content, String time) {
         this.flag = flag;
         this.content = content;
