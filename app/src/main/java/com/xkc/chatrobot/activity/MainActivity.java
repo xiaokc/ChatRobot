@@ -27,6 +27,7 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.xkc.chatrobot.Helper.Const;
+import com.xkc.chatrobot.Helper.DBManager;
 import com.xkc.chatrobot.Helper.Util;
 import com.xkc.chatrobot.R;
 import com.xkc.chatrobot.adapter.ChatTextAdapter;
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private final String TAG = MainActivity.class.getSimpleName();
 
+    private DBManager dbManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,15 +93,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         initEvent();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int hasAudioPermission = checkSelfPermission(Manifest.permission.RECORD_AUDIO);
-            if (hasAudioPermission != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},100);
+            if (hasAudioPermission != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 100);
             }
 
             int hasWritePermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (hasWritePermission != PackageManager.PERMISSION_GRANTED){
-                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},200);
+            if (hasWritePermission != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 200);
             }
 
         }
@@ -155,8 +158,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chat_et.addTextChangedListener(textWatcher);
         contentString = "";
 
-        SharedPreferences preferences = getSharedPreferences("user_info",MODE_PRIVATE);
-        userid = preferences.getLong("userid",-1L);
+        SharedPreferences preferences = getSharedPreferences("user_info", MODE_PRIVATE);
+        userid = preferences.getLong("userid", -1L);
 
 
     }
@@ -173,19 +176,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         showChatList();
     }
 
-    private void showChatList(){
-        chat_list.add(new ChatText(ChatText.ROBOT, "Welcome", getTime()));
-
+    private void showChatList() {
         intent = getIntent();
         if (intent != null) {
             Bundle bundle = intent.getExtras();
-            if (bundle != null && bundle.containsKey(JPushInterface.EXTRA_ALERT)){
+            if (bundle != null && bundle.containsKey(JPushInterface.EXTRA_ALERT)) {
                 String message = bundle.getString(JPushInterface.EXTRA_ALERT);
-                chat_list.add(new ChatText(ChatText.ROBOT,message,getTime()));
+                chat_list.add(new ChatText(ChatText.ROBOT, message, getTime()));
             }
 
         }
 
+        dbManager = new DBManager(this);
+        List<ChatText> list = dbManager.queryListData(userid);
+        if (list == null || list.size() == 0){
+            chat_list.add(new ChatText(ChatText.ROBOT, "嗨，美好的一天开始啦~", getTime()));
+        }else {
+            for(ChatText chatText : list){
+                chat_list.add(chatText);
+            }
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -204,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void sendText(){
+    private void sendText() {
         contentString = chat_et.getText().toString();
         String time = getTime();
         ChatText chatText = new ChatText(ChatText.USER, contentString, time);
@@ -212,10 +222,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chat_list.add(chatText);//add user's chat text to chat list
         adapter.notifyDataSetChanged();
         chat_rv.scrollToPosition(chat_list.size() - 1);
+        dbManager.addChatText(userid,chatText);
 
         doChat();
 
     }
+
     private void doChat() {
         HashMap<String, Object> params = new HashMap<>();
         params.put("userid", userid);
@@ -247,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ChatText chatText = new ChatText(ChatText.ROBOT, text, time);
                 chat_list.add(chatText);
                 adapter.notifyDataSetChanged();
-
+                dbManager.addChatText(userid,chatText);
                 chat_rv.scrollToPosition(chat_list.size() - 1);
             } else {
                 Log.e(TAG, "parse text from server occurred error," + text);
@@ -301,12 +313,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onResult(RecognizerResult results, boolean isLast) {
             String string = Util.parseIatResult(results.getResultString());
-            if (string != null && ! string.equals("")) {
+            if (string != null && !string.equals("")) {
                 contentString += string;// 解析成文字
 
-                ChatText chatText = new ChatText(ChatText.USER, contentString,getTime());// 点击发送按钮发送的内容标识为用户状态
+                ChatText chatText = new ChatText(ChatText.USER, contentString, getTime());// 点击发送按钮发送的内容标识为用户状态
                 chat_list.add(chatText);
-//                dbManager.addListData(listData);//将获取到的数据添加到聊天记录数据库表中
+                dbManager.addChatText(userid,chatText);//将获取到的数据添加到聊天记录数据库表中
                 adapter.notifyDataSetChanged();// 添加完数据之后需要进行重新适配，刷新
 
                 doChat();
@@ -340,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 return;
             }
-            case 200:{
+            case 200: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -355,7 +367,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // permissions this app might request
         }
     }
-
 
 
 }
