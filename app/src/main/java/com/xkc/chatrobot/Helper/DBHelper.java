@@ -11,14 +11,15 @@ import android.util.Log;
  */
 
 public class DBHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = Environment.getExternalStorageDirectory() + "/chatrobot/chat.db";
+    private static final String DATABASE_NAME = Environment.getExternalStorageDirectory()
+            + "/chatrobot/chat.db";
     private static final int DATABASE_VERSION = 1;
     private final String TAG = DBHelper.class.getSimpleName();
 
     private static final String CREATE_TABLE_SQL =
             "create table chat(_id integer primary key autoincrement,"
                     + "userid int(4),"
-                    + "chat_time varchar(20),"
+                    + "chat_time timestamp not null default current_timestamp,"
                     + "chat_content varchar(1000),"
                     + "chat_flag int(4))";
 
