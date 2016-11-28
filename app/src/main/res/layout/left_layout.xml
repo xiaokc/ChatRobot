@@ -17,7 +17,7 @@
         android:layout_below="@+id/time"
         android:layout_marginLeft="10dp"
         android:padding="10dp"
-        android:src="@drawable/robot" />
+        android:src="@drawable/sunflower" />
 
     <TextView
         android:id="@+id/left_tv"
