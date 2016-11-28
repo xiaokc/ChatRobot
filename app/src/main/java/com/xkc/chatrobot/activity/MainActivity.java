@@ -177,15 +177,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showChatList() {
-        intent = getIntent();
-        if (intent != null) {
-            Bundle bundle = intent.getExtras();
-            if (bundle != null && bundle.containsKey(JPushInterface.EXTRA_ALERT)) {
-                String message = bundle.getString(JPushInterface.EXTRA_ALERT);
-                chat_list.add(new ChatText(ChatText.ROBOT, message, getTime()));
-            }
-
-        }
 
         dbManager = new DBManager(this);
         List<ChatText> list = dbManager.queryListData(userid);
@@ -196,6 +187,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 chat_list.add(chatText);
             }
         }
+
+        intent = getIntent();
+        if (intent != null) {
+            Bundle bundle = intent.getExtras();
+            if (bundle != null && bundle.containsKey(JPushInterface.EXTRA_ALERT)) {
+                String message = bundle.getString(JPushInterface.EXTRA_ALERT);
+                chat_list.add(new ChatText(ChatText.ROBOT, message, getTime()));
+            }
+
+        }
+
         adapter.notifyDataSetChanged();
     }
 
