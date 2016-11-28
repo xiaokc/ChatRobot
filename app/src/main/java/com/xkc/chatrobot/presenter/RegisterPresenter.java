@@ -48,7 +48,8 @@ public class RegisterPresenter {
             protected String doInBackground(String... params) {
                 if (Util.hasNetwork(context)) {
                     String result = "";
-                    if (username == null || password == null) {
+                    if (username == null || username.equals("")
+                            || password == null || password.equals("")) {
                         return Const.NULL_PARAMS;
                     }
 
@@ -155,23 +156,23 @@ public class RegisterPresenter {
                         if (jsonObject.has("userid")){
                             callback.onSuccess(null,jsonObject.getLong("userid"));
                         }else {
-                            callback.onFail(new Exception(Const.NO_USERID),Const.NO_USERID);
+                            callback.onFail(new Exception(Const.REGISTER_FAIL),Const.NO_USERID);
                         }
                         break;
                     case 1:
                         callback.onFail(new Exception(Const.REGISTER_FAIL),Const.REGISTER_FAIL);
                         break;
                     case 2:
-                        callback.onFail(new Exception(Const.USER_EXISTED),Const.USER_EXISTED);
+                        callback.onFail(new Exception(Const.REGISTER_FAIL),Const.USER_EXISTED);
                         break;
                 }
             }else {
                 if (s.equalsIgnoreCase(Const.NULL_PARAMS))
-                    callback.onFail(new Exception(Const.NULL_PARAMS),"username或password"+Const.NULL_PARAMS);
+                    callback.onFail(new Exception(Const.REGISTER_FAIL),"username或password"+Const.NULL_PARAMS);
                 else if (s.equalsIgnoreCase(Const.NETWORK_ERROR))
-                    callback.onFail(new Exception(Const.NETWORK_ERROR),Const.NETWORK_ERROR);
+                    callback.onFail(new Exception(Const.REGISTER_FAIL),Const.NETWORK_ERROR);
                 else {
-                    callback.onFail(new Exception(Const.ERROR),Const.ERROR);
+                    callback.onFail(new Exception(Const.REGISTER_FAIL),Const.ERROR);
                 }
             }
         } catch (JSONException e) {
