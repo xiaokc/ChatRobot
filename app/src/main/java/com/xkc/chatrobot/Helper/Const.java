@@ -26,6 +26,7 @@ public class Const {
     public static final String LOGIN_SUCCESS = "登陆成功";
     public static final String LOGIN_FAIL = "登录失败";
     public static final String USER_NOT_EXISTED = "用户名不存在";
+    public static final String WRONG_PASSWORD = "密码错误";
 
 
 }
