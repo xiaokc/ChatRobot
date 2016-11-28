@@ -1,13 +1,16 @@
 package com.xkc.chatrobot.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -129,6 +132,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 editor.commit();
 
                 userid = preferences.getLong("userid",-1L);
+
+                goLogin();
             } else {
                 Log.e(TAG, Const.REGISTER_FAIL + obj.toString());
             }
@@ -137,13 +142,41 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         @Override
         public void onFail(Exception e, Object obj) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(SignInActivity.this);
+            builder.setTitle(Const.REGISTER_FAIL);
+            builder.setMessage(obj.toString());
+            builder.show();
+
             Log.e(TAG, Const.REGISTER_FAIL + obj.toString());
         }
     };
 
+    private void goLogin(){
+        new AlertDialog.Builder(SignInActivity.this)
+                .setMessage("马上登录？")
+                .setPositiveButton("好的", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        HashMap<String, String> params = new HashMap<>();
+                        params.put("username", preferences.getString("username", ""));
+                        params.put("password", preferences.getString("password", ""));
+                        LoginPresenter loginPresenter = new LoginPresenter(SignInActivity.this, params);
+                        loginPresenter.doLogin(loginCallback);
+                    }
+                })
+                .setNegativeButton("不了，谢谢",null)
+                .show();
+
+    }
+
     private LoginCallback loginCallback = new LoginCallback() {
         @Override
         public void onFail(Exception e, Object obj) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(SignInActivity.this);
+            builder.setTitle(Const.LOGIN_FAIL);
+            builder.setMessage(obj.toString());
+            builder.show();
+
             Log.e(TAG, Const.LOGIN_FAIL + obj.toString());
         }
 
@@ -166,7 +199,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 }
 
                 startActivity(intent);
-                SignInActivity.this.finish();
             } else {
                 Log.e(TAG, Const.LOGIN_FAIL + obj.toString());
             }
@@ -185,22 +217,36 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         switch (v.getId()) {
             case R.id.register_tv:
-                RegisterPresenter registerPresenter = new RegisterPresenter(SignInActivity.this, params);
-                if (confirm_password.equals(password)) {
-                    registerPresenter.doRegister(registerCallback);
-                    editor.putString("username", username);
-                    editor.putString("password", password);
-                    editor.commit();
+                boolean isValidRegister = notNullRegisterParams(username,password,confirm_password);
+                if(isValidRegister) {
+                    RegisterPresenter registerPresenter = new RegisterPresenter(SignInActivity.this, params);
+                    if (confirm_password.equals(password)) {
+                        registerPresenter.doRegister(registerCallback);
+                        editor.putString("username", username);
+                        editor.putString("password", password);
+                        editor.commit();
 
-                } else {
-                    Toast.makeText(this, Const.NOT_SAME_PASSWORD, Toast.LENGTH_LONG).show();
-                    confirm_password_et.setText("");
+                    } else {
+                        Toast.makeText(this, Const.NOT_SAME_PASSWORD, Toast.LENGTH_LONG).show();
+                        confirm_password_et.setText("");
+                    }
+                }else {
+                 new AlertDialog.Builder(SignInActivity.this)
+                         .setMessage("请填入用户名、密码和确认密码")
+                         .show();
                 }
 
                 break;
             case R.id.login_tv:
-                LoginPresenter loginPresenter = new LoginPresenter(SignInActivity.this, params);
-                loginPresenter.doLogin(loginCallback);
+                boolean isValidLogin = notNullLoginParams(username,password);
+                if (isValidLogin) {
+                    LoginPresenter loginPresenter = new LoginPresenter(SignInActivity.this, params);
+                    loginPresenter.doLogin(loginCallback);
+                }else {
+                    new AlertDialog.Builder(SignInActivity.this)
+                            .setMessage("请填入用户名和密码")
+                            .show();
+                }
                 break;
             case R.id.go_register_tv:
                 login_tv.setVisibility(View.INVISIBLE);
@@ -213,6 +259,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 break;
         }
 
+    }
+
+    private boolean notNullRegisterParams(String username, String password, String confirmPassword){
+        return ! username.equals("") && ! password.equals("") && ! confirmPassword.equals("");
+    }
+
+    private boolean notNullLoginParams(String username, String password){
+        return ! username.equals("") && ! password.equals("");
     }
 
     @Override
