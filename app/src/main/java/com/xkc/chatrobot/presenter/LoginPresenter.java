@@ -50,7 +50,8 @@ public class LoginPresenter {
             protected String doInBackground(String... params) {
                 if (Util.hasNetwork(context)) {
                     String result = "";
-                    if (username == null || password == null) {
+                    if (username == null ||username.equals("")
+                            || password == null || password.equals("")) {
                         return Const.NULL_PARAMS;
                     }
 
@@ -152,25 +153,25 @@ public class LoginPresenter {
                     String reason = jsonObject.getString("reason");
                     switch (jsonObject.getInt("state")) {
                         case 0:
-                            callback.onSuccess(null,reason);
+                            callback.onSuccess(null,Const.LOGIN_SUCCESS);
                             break;
                         case 1:
-                            callback.onFail(new Exception(Const.LOGIN_FAIL),Const.LOGIN_FAIL);
+                            callback.onFail(new Exception(Const.LOGIN_FAIL),Const.WRONG_PASSWORD);
                             break;
                         case 2:
-                            callback.onFail(new Exception(Const.USER_NOT_EXISTED),Const.USER_NOT_EXISTED);
+                            callback.onFail(new Exception(Const.LOGIN_FAIL),Const.USER_NOT_EXISTED);
                             break;
                     }
                 }else {
-                    callback.onFail(new Exception(Const.ERROR),Const.ERROR);
+                    callback.onFail(new Exception(Const.LOGIN_FAIL),Const.ERROR);
                 }
             }else {
                 if (s.equalsIgnoreCase(Const.NULL_PARAMS))
-                    callback.onFail(new Exception(Const.NULL_PARAMS),"username或password"+Const.NULL_PARAMS);
+                    callback.onFail(new Exception(Const.LOGIN_FAIL),"username或password"+Const.NULL_PARAMS);
                 else if (s.equalsIgnoreCase(Const.NETWORK_ERROR))
-                    callback.onFail(new Exception(Const.NETWORK_ERROR),Const.NETWORK_ERROR);
+                    callback.onFail(new Exception(Const.LOGIN_FAIL),Const.NETWORK_ERROR);
                 else {
-                    callback.onFail(new Exception(Const.ERROR),Const.ERROR);
+                    callback.onFail(new Exception(Const.LOGIN_FAIL),Const.ERROR);
                 }
             }
         } catch (JSONException e) {
