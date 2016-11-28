@@ -35,26 +35,21 @@ public class DBManager {
         Log.i(TAG, "addChatText() is called");
         db.beginTransaction();
         String addSql = "insert into chat(userid,chat_time,chat_content,chat_flag) values(?,?,?,?)";
-
         String content = chatText.getContent();//聊天记录内容
-
         String time = chatText.getTime();//聊天记录时间
         int  flag = chatText.getFlag();//聊天标识，1表示用户，2表示机器人
-
         try {
             db.execSQL(addSql, new Object[]{userid,time, content, flag});
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
-
     }
 
 
     /**
-     * 返回对应对应userid的所有聊天记录
      * @param userid
-     * @return
+     * @return 返回对应对应userid的所有聊天记录
      */
     public List<ChatText> queryListData(long userid){
         Log.d(TAG,"queryListData() is called");
@@ -78,7 +73,7 @@ public class DBManager {
     /**
      * 查询userid的游标
      * @param userid
-     * @return 最多10条数据
+     * @return 当天的聊天数据
      */
     private Cursor queryUserid(long userid){
         Log.i(TAG,"queryUserid() is called");
