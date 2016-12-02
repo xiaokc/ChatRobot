@@ -28,5 +28,8 @@ public class Const {
     public static final String USER_NOT_EXISTED = "用户名不存在";
     public static final String WRONG_PASSWORD = "密码错误";
 
+    public static final String ACTIVITY_RUNNING = "聊天界面在前台";
+    public static final String ACTIVITY_NOT_RUNNING = "聊天界面不在前台";
+
 
 }
