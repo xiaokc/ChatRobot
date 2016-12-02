@@ -1,10 +1,12 @@
 package com.xkc.chatrobot.activity;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,25 +36,15 @@ import com.xkc.chatrobot.adapter.ChatTextAdapter;
 import com.xkc.chatrobot.callbacks.ChatCallback;
 import com.xkc.chatrobot.model.ChatText;
 import com.xkc.chatrobot.presenter.ChatPresenter;
+import com.xkc.chatrobot.push.PushService;
+import com.xkc.chatrobot.push.TimerManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -370,5 +362,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    protected void onResume() {
+        Log.d(TAG,"onResume() called");
+        super.onResume();
+
+        IntentFilter filter = new IntentFilter("com.xkc.chatrobot.activity.MainActivity");
+        registerReceiver(serverMsgReceiver,filter);
+
+        Intent intent = new Intent(this,PushService.class);
+        startService(intent);
+
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(serverMsgReceiver);
+        super.onPause();
+    }
+
+    private BroadcastReceiver serverMsgReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG,"ServerMsgReceiver{onReceive()} called");
+            String msg = intent.getStringExtra("reply");
+            Log.d(TAG,"receive msg:"+msg);
+
+            //接收到服务器发送过来的情绪识别消息，及时显示在聊天界面
+            chat_list.add(new ChatText(ChatText.ROBOT,msg,getTime()));
+            adapter.notifyDataSetChanged();
+        }
+    };
 
 }
