@@ -94,7 +94,7 @@ public class TimerManager {
 
     }
 
-     private class PushTask extends TimerTask {
+    private class PushTask extends TimerTask {
 
         @Override
         public void run() {
