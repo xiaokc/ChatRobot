@@ -28,12 +28,14 @@ public class ChatPresenter {
     private long userid;
     private String key;
     private String info;
+    private boolean requestSentiment;
     private final String TAG = ChatPresenter.class.getSimpleName();
     public ChatPresenter(Context context, HashMap<String,Object> params){
         this.context = context;
         this.userid = (long) params.get("userid");
         this.key = (String) params.get("key");
         this.info = (String) params.get("info");
+        this.requestSentiment = (boolean) params.get("sentiment");
 
     }
 
@@ -54,6 +56,8 @@ public class ChatPresenter {
                     jsonObject.accumulate("key", key);
                     jsonObject.accumulate("info", info);
                     jsonObject.accumulate("userid",userid);
+                    jsonObject.accumulate("sentiment",requestSentiment);
+
                 } catch (JSONException e) {
                     Log.e(TAG, "Post JSONException occur: " + e.getMessage());
                 }
