@@ -34,6 +34,7 @@ import com.xkc.chatrobot.Helper.Util;
 import com.xkc.chatrobot.R;
 import com.xkc.chatrobot.adapter.ChatTextAdapter;
 import com.xkc.chatrobot.callbacks.ChatCallback;
+import com.xkc.chatrobot.model.ChatCount;
 import com.xkc.chatrobot.model.ChatText;
 import com.xkc.chatrobot.presenter.ChatPresenter;
 import com.xkc.chatrobot.push.PushService;
@@ -45,6 +46,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -53,7 +56,8 @@ import static com.xkc.chatrobot.Helper.Util.getTime;
 /**
  * Main Chat UI
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,
+        ChatCount.MaxValueListener {
     private RecyclerView chat_rv;
     private LinearLayoutManager linearLayoutManager;
     private EditText chat_et;
@@ -75,6 +79,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final String TAG = MainActivity.class.getSimpleName();
 
     private DBManager dbManager;
+
+    private int count = 0;//用户发送的聊天数目
+
+    private ChatCount chatCount = new ChatCount();
 
 
     @Override
@@ -165,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chat_rv.setLayoutManager(linearLayoutManager);
         chat_rv.setAdapter(adapter);
 
+        chatCount.setMaxValueListener(this);
+
         showChatList();
     }
 
@@ -218,15 +228,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         chat_rv.scrollToPosition(chat_list.size() - 1);
         dbManager.addChatText(userid,chatText);
 
-        doChat();
+
+        count ++;//聊天数目增加
+        Log.d(TAG,"count="+count);
+        chatCount.setValue(count);
+
+        Log.d(TAG,"getValue="+chatCount.getValue());
+
+        if (chatCount.getValue() == Const.MAX_CHAT_COUNT) {
+            count = 0;
+            chatCount.setValue(count);
+            doChat(userid, Const.tuling_key, contentString,true);//请求情绪识别
+        }else {
+            doChat(userid,Const.tuling_key,contentString,false);//请求聊天内容
+        }
 
     }
 
-    private void doChat() {
+    private void doChat(long userid,String tulingKey, String contentString, boolean requestSentiment) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("userid", userid);
-        params.put("key", Const.tuling_key);
+        params.put("key", tulingKey);
         params.put("info", contentString);
+        params.put("sentiment",requestSentiment);
         ChatPresenter presenter = new ChatPresenter(MainActivity.this, params);
         presenter.getAnsFromServer(new ChatCallback() {
             @Override
@@ -248,7 +272,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int state = jsonObject.getInt("state");
             String text = jsonObject.getString("text");
 
-            if (state == 0) {
+            if (state == 0 || state == 3) {
+                //state == 0表示从图灵机器人转发的聊天内容
+                //state == 3表示中间服务器情绪识别返回的聊天内容
                 String time = getTime();
                 ChatText chatText = new ChatText(ChatText.ROBOT, text, time);
                 chat_list.add(chatText);
@@ -257,6 +283,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 chat_rv.scrollToPosition(chat_list.size() - 1);
             } else {
                 Log.e(TAG, "parse text from server occurred error," + text);
+
+                //这里，表示图灵机器人响应异常，暂时使用和上面一样的处理方式
+                String time = getTime();
+                ChatText chatText = new ChatText(ChatText.ROBOT, text, time);
+                chat_list.add(chatText);
+                adapter.notifyDataSetChanged();
+                dbManager.addChatText(userid,chatText);
+                chat_rv.scrollToPosition(chat_list.size() - 1);
             }
         } catch (JSONException e) {
             Log.e(TAG, "Parse JSONException occur: " + e.getMessage());
@@ -315,7 +349,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dbManager.addChatText(userid,chatText);//将获取到的数据添加到聊天记录数据库表中
                 adapter.notifyDataSetChanged();// 添加完数据之后需要进行重新适配，刷新
 
-                doChat();
+                count ++;
+                chatCount.setValue(count);
+
+                if (chatCount.getValue() == Const.MAX_CHAT_COUNT){
+                    count = 0;
+                    chatCount.setValue(count);
+                    doChat(userid,Const.tuling_key,contentString,true);
+                }else {
+                    doChat(userid,Const.tuling_key,contentString,false);
+                }
+
+
             }
             contentString = "";
 
@@ -394,4 +439,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
+    @Override
+    public void onMaxCount() {
+        Log.d(TAG,"onMaxCount() called");
+//        count = 0;
+//        chatCount.setValue(count);//置位
+    }
 }
