@@ -8,7 +8,7 @@ public class Const {
     public static final String local_server = "http://10.3.200.10:5000";
     public static final String tuling_key = "da89ff52e58c5ade5acbcb3c7bb35c8c";
 //    public static final String tuling_key = "3d89ec012826fbf85e7a018daec73026";
-    public static final int connect_timeout = 60000;
+    public static final int connect_timeout = 100000;
     public static final String register_url = local_server + "/register";
     public static final String login_url = local_server +"/login";
     public static final String chat_url = local_server +"/chat";
@@ -30,6 +30,11 @@ public class Const {
 
     public static final String ACTIVITY_RUNNING = "聊天界面在前台";
     public static final String ACTIVITY_NOT_RUNNING = "聊天界面不在前台";
+
+    //用户发送的最大聊天数目，意思是达到这个数目后，向服务器发起socket连接请求，获取情绪识别相关内容
+    public static final int MAX_CHAT_COUNT = 5;
+
+    public static final String SENTIMENT_ANALYSIS = "情绪识别请求";
 
 
 }
