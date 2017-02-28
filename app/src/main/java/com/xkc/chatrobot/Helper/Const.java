@@ -36,5 +36,9 @@ public class Const {
 
     public static final String SENTIMENT_ANALYSIS = "情绪识别请求";
 
+    public static final String PUSH_HOST = "10.3.200.10";
+    public static final int PUSH_PORT = 1130;
+    public static final String PUSH_ACTION = "com.xkc.chatrobot.activity.MainActivity";
+
 
 }

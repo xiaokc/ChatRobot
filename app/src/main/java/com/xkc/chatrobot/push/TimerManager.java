@@ -103,7 +103,7 @@ public class TimerManager {
             BufferedWriter writer = null;
             BufferedReader reader = null;
             try {
-                socket = new Socket("10.3.200.10", 1130);
+                socket = new Socket(Const.PUSH_HOST, Const.PUSH_PORT);
                 writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -126,7 +126,7 @@ public class TimerManager {
                     while ((reply = reader.readLine()) != null){
                         Log.d(TAG,"reply is not null : "+reply);
                         Intent intent = new Intent();
-                        intent.setAction("com.xkc.chatrobot.activity.MainActivity");
+                        intent.setAction(Const.PUSH_ACTION);
                         intent.putExtra("reply",reply);
                         context.sendBroadcast(intent);
                         Log.d(TAG,"send broadcast");
