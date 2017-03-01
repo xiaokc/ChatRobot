@@ -94,7 +94,7 @@ public class RegisterPresenter {
                         Log.i(TAG, "requestParams=" + requestParams + ",result=" + result);
                     } catch (IOException e) {
                         Log.e(TAG, "IOException occur: " + e.getMessage());
-                        callback.onFail(e,e.getMessage());
+                        result = Const.NETWORK_ERROR;
                     } finally {
                         if (connection != null) {
                             connection.disconnect();
@@ -105,7 +105,7 @@ public class RegisterPresenter {
                                 writer.close();
                             }
                         } catch (IOException e) {
-                            callback.onFail(e,e.getMessage());
+                            result = Const.NETWORK_ERROR;
                             Log.e(TAG, "Writer Close IOException occur: " + e.getMessage());
                         }
 
@@ -115,7 +115,7 @@ public class RegisterPresenter {
                                 reader.close();
                             }
                         } catch (IOException e) {
-                            callback.onFail(e,e.getMessage());
+                            result = Const.NETWORK_ERROR;
                             Log.e(TAG, "Reader Close IOException occur: " + e.getMessage());
                         }
 
@@ -177,6 +177,7 @@ public class RegisterPresenter {
             }
         } catch (JSONException e) {
             Log.e(TAG,"JsonException:"+e.getMessage());
+            callback.onFail(new Exception(Const.REGISTER_FAIL),Const.NETWORK_ERROR);
         }
     }
 }
