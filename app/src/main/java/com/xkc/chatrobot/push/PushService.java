@@ -22,7 +22,7 @@ public class PushService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG,"onCreate() called");
+        Log.i(TAG,"onCreate() called");
         super.onCreate();
     }
 
@@ -30,14 +30,14 @@ public class PushService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG,"onStartCommand() called");
+        Log.i(TAG,"onStartCommand() called");
         new TimerManager(PushService.this);
         return Service.START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG,"onDestory() called");
+        Log.i(TAG,"onDestory() called");
         super.onDestroy();
     }
 }

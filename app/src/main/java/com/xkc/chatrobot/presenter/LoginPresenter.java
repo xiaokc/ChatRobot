@@ -137,7 +137,7 @@ public class LoginPresenter {
                     mDialog = null;
                 }
 
-                Log.d(TAG,"res:"+s);
+                Log.i(TAG,"res:"+s);
                 parseLogin(callback,s);
 
                 super.onPostExecute(s);

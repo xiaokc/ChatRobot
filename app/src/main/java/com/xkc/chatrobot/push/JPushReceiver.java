@@ -30,15 +30,15 @@ public class JPushReceiver extends BroadcastReceiver {
         }
 
         Bundle bundle = intent.getExtras();
-        Log.d(TAG, "onReceive - " + intent.getAction() + ", extras: " + printBundle(bundle));
+        Log.i(TAG, "onReceive - " + intent.getAction() + ", extras: " + printBundle(bundle));
 
         if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
-            Log.d(TAG, "接收到推送的通知");
+            Log.i(TAG, "接收到推送的通知");
 
             receivingNotification(bundle);
 
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
-            Log.d(TAG, "用户点击打开了通知");
+            Log.i(TAG, "用户点击打开了通知");
 
             openNotification(context, bundle);
 
@@ -47,11 +47,11 @@ public class JPushReceiver extends BroadcastReceiver {
     }
     private void receivingNotification(Bundle bundle){
         String title = bundle.getString(JPushInterface.EXTRA_NOTIFICATION_TITLE);
-        Log.d(TAG, " title : " + title);
+        Log.i(TAG, " title : " + title);
         String message = bundle.getString(JPushInterface.EXTRA_ALERT);
-        Log.d(TAG, "message : " + message);
+        Log.i(TAG, "message : " + message);
         String extras = bundle.getString(JPushInterface.EXTRA_EXTRA);
-        Log.d(TAG, "extras : " + extras);
+        Log.i(TAG, "extras : " + extras);
     }
 
     private void openNotification(Context context, Bundle bundle){

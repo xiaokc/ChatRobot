@@ -135,7 +135,7 @@ public class RegisterPresenter {
                     mDialog = null;
                 }
 
-                Log.d(TAG,"res:"+s);
+                Log.i(TAG,"res:"+s);
                 parseRegisterRes(callback,s);
 
                 super.onPostExecute(s);

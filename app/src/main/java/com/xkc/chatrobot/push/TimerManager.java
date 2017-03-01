@@ -38,7 +38,7 @@ public class TimerManager {
 
 
     public TimerManager(Context context) {
-        Log.d(TAG,"TimerManager() called");
+        Log.i(TAG,"TimerManager() called");
         this.context = context;
 
         Calendar calendar = Calendar.getInstance();
@@ -47,9 +47,9 @@ public class TimerManager {
         /*** 定制每日15:00执行方法 ***/
 
 
-        calendar.set(Calendar.HOUR_OF_DAY, 21);
+        calendar.set(Calendar.HOUR_OF_DAY, 11);
 
-        calendar.set(Calendar.MINUTE, 7);
+        calendar.set(Calendar.MINUTE, 5);
 
         calendar.set(Calendar.SECOND, 0);
 
@@ -98,7 +98,7 @@ public class TimerManager {
 
         @Override
         public void run() {
-            Log.d(TAG,"PushTask{run()} is called");
+            Log.i(TAG,"PushTask{run()} is called");
             Socket socket = null;
             BufferedWriter writer = null;
             BufferedReader reader = null;
@@ -124,12 +124,12 @@ public class TimerManager {
                     writer.flush();
                     String reply;
                     while ((reply = reader.readLine()) != null){
-                        Log.d(TAG,"reply is not null : "+reply);
+                        Log.i(TAG,"reply is not null : "+reply);
                         Intent intent = new Intent();
                         intent.setAction(Const.PUSH_ACTION);
                         intent.putExtra("reply",reply);
                         context.sendBroadcast(intent);
-                        Log.d(TAG,"send broadcast");
+                        Log.i(TAG,"send broadcast");
                     }
                 }else {
                     //讲道理，如果activity已经finish了，这里根本运行不到 gg

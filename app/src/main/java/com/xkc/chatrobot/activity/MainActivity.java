@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onResume() {
-        Log.d(TAG,"onResume() called");
+        Log.i(TAG,"onResume() called");
         super.onResume();
 
         IntentFilter filter = new IntentFilter("com.xkc.chatrobot.activity.MainActivity");
@@ -429,9 +429,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private BroadcastReceiver serverMsgReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG,"ServerMsgReceiver{onReceive()} called");
+            Log.i(TAG,"ServerMsgReceiver{onReceive()} called");
             String msg = intent.getStringExtra("reply");
-            Log.d(TAG,"receive msg:"+msg);
+            Log.i(TAG,"receive msg:"+msg);
 
             //接收到服务器发送过来的情绪识别消息，及时显示在聊天界面
             chat_list.add(new ChatText(ChatText.ROBOT,msg,getTime()));
@@ -441,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onMaxCount() {
-        Log.d(TAG,"onMaxCount() called");
+        Log.i(TAG,"onMaxCount() called");
 //        count = 0;
 //        chatCount.setValue(count);//置位
     }

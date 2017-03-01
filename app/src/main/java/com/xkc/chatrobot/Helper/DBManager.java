@@ -52,11 +52,11 @@ public class DBManager {
      * @return 返回对应对应userid的所有聊天记录
      */
     public List<ChatText> queryListData(long userid){
-        Log.d(TAG,"queryListData() is called");
+        Log.i(TAG,"queryListData() is called");
         List<ChatText> datas = new ArrayList<>();
         cursor = queryUserid(userid);
         cursor.moveToFirst();
-        Log.d(TAG,"cursor count :"+cursor.getCount());
+        Log.i(TAG,"cursor count :"+cursor.getCount());
         if (cursor.getCount() > 0) {
             do {
                 ChatText chatText = new ChatText();

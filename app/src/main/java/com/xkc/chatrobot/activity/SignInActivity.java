@@ -127,7 +127,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         public void onSuccess(Exception e, Object obj) {
             if (e == null) {
                 Toast.makeText(SignInActivity.this, Const.REGISTER_SUCCESS, Toast.LENGTH_LONG).show();
-                Log.d(TAG,"register callback obj:"+obj.toString());
+                Log.i(TAG,"register callback obj:"+obj.toString());
                 editor.putLong("userid", (Long) obj);
                 editor.commit();
 
@@ -187,13 +187,13 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 Toast.makeText(SignInActivity.this, Const.LOGIN_SUCCESS, Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                Log.d(TAG,"userid="+userid);
+                Log.i(TAG,"userid="+userid);
                 if (userid != -1){
                     //如果登陆成功，设置用户别名为userid
                     JPushInterface.setAlias(getApplicationContext(), String.valueOf(userid), new TagAliasCallback() {
                         @Override
                         public void gotResult(int i, String s, Set<String> set) {
-                            Log.d(TAG,"set alias success!");
+                            Log.i(TAG,"set alias success!");
                         }
                     });
                 }
