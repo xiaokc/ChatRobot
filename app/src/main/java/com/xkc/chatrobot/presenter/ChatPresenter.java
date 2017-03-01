@@ -3,7 +3,7 @@ package com.xkc.chatrobot.presenter;
 import android.content.Context;
 import android.util.Log;
 
-import com.xkc.chatrobot.Helper.Const;
+import com.xkc.chatrobot.helper.Const;
 import com.xkc.chatrobot.callbacks.ChatCallback;
 import com.xkc.chatrobot.tasks.MyAsyncTask;
 

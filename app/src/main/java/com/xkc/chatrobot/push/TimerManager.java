@@ -1,14 +1,11 @@
 package com.xkc.chatrobot.push;
 
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.xkc.chatrobot.Helper.Const;
-import com.xkc.chatrobot.activity.MainActivity;
+import com.xkc.chatrobot.helper.Const;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,9 +44,9 @@ public class TimerManager {
         /*** 定制每日15:00执行方法 ***/
 
 
-        calendar.set(Calendar.HOUR_OF_DAY, 11);
+        calendar.set(Calendar.HOUR_OF_DAY, 13);
 
-        calendar.set(Calendar.MINUTE, 5);
+        calendar.set(Calendar.MINUTE, 4);
 
         calendar.set(Calendar.SECOND, 0);
 
@@ -75,7 +72,8 @@ public class TimerManager {
 
         //安排指定的任务在指定的时间开始进行重复的固定延迟执行。
 
-        timer.schedule(task, date, PERIOD_DAY);
+//        timer.schedule(task, date, PERIOD_DAY);
+        timer.schedule(task,0);
 
     }
 
@@ -128,7 +126,7 @@ public class TimerManager {
                         Intent intent = new Intent();
                         intent.setAction(Const.PUSH_ACTION);
                         intent.putExtra("reply",reply);
-                        context.sendBroadcast(intent);
+                        context.getApplicationContext().sendBroadcast(intent);
                         Log.i(TAG,"send broadcast");
                     }
                 }else {

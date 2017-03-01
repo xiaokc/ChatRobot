@@ -1,6 +1,6 @@
 package com.xkc.chatrobot.model;
 
-import com.xkc.chatrobot.Helper.Const;
+import com.xkc.chatrobot.helper.Const;
 
 /**
  * Created by xkc on 12/5/16.

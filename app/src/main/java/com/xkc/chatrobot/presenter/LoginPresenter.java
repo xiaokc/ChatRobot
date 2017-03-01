@@ -1,11 +1,10 @@
 package com.xkc.chatrobot.presenter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.xkc.chatrobot.Helper.Const;
-import com.xkc.chatrobot.Helper.Util;
+import com.xkc.chatrobot.helper.Const;
+import com.xkc.chatrobot.helper.Util;
 import com.xkc.chatrobot.callbacks.LoginCallback;
 import com.xkc.chatrobot.tasks.MyAsyncTask;
 

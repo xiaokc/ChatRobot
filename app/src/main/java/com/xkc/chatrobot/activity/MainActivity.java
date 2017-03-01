@@ -28,9 +28,9 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
-import com.xkc.chatrobot.Helper.Const;
-import com.xkc.chatrobot.Helper.DBManager;
-import com.xkc.chatrobot.Helper.Util;
+import com.xkc.chatrobot.helper.Const;
+import com.xkc.chatrobot.helper.DBManager;
+import com.xkc.chatrobot.helper.Util;
 import com.xkc.chatrobot.R;
 import com.xkc.chatrobot.adapter.ChatTextAdapter;
 import com.xkc.chatrobot.callbacks.ChatCallback;
@@ -38,7 +38,6 @@ import com.xkc.chatrobot.model.ChatCount;
 import com.xkc.chatrobot.model.ChatText;
 import com.xkc.chatrobot.presenter.ChatPresenter;
 import com.xkc.chatrobot.push.PushService;
-import com.xkc.chatrobot.push.TimerManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,12 +45,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import cn.jpush.android.api.JPushInterface;
 
-import static com.xkc.chatrobot.Helper.Util.getTime;
+import static com.xkc.chatrobot.helper.Util.getTime;
 
 /**
  * Main Chat UI
@@ -195,7 +192,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Bundle bundle = intent.getExtras();
             if (bundle != null && bundle.containsKey(JPushInterface.EXTRA_ALERT)) {
                 String message = bundle.getString(JPushInterface.EXTRA_ALERT);
-                chat_list.add(new ChatText(ChatText.ROBOT, message, getTime()));
+                ChatText chatText = new ChatText(ChatText.ROBOT, message, getTime());
+                chat_list.add(chatText);
+                dbManager.addChatText(userid,chatText);
+                chat_rv.scrollToPosition(chat_list.size() - 1);
+
             }
 
         }
@@ -348,6 +349,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 chat_list.add(chatText);
                 dbManager.addChatText(userid,chatText);//将获取到的数据添加到聊天记录数据库表中
                 adapter.notifyDataSetChanged();// 添加完数据之后需要进行重新适配，刷新
+                chat_rv.scrollToPosition(chat_list.size() - 1);
 
                 count ++;
                 chatCount.setValue(count);
@@ -412,12 +414,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i(TAG,"onResume() called");
         super.onResume();
 
-        IntentFilter filter = new IntentFilter("com.xkc.chatrobot.activity.MainActivity");
+        IntentFilter filter = new IntentFilter(Const.PUSH_ACTION);
         registerReceiver(serverMsgReceiver,filter);
 
         Intent intent = new Intent(this,PushService.class);
         startService(intent);
-
     }
 
     @Override
@@ -434,8 +435,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.i(TAG,"receive msg:"+msg);
 
             //接收到服务器发送过来的情绪识别消息，及时显示在聊天界面
-            chat_list.add(new ChatText(ChatText.ROBOT,msg,getTime()));
+            ChatText chatText = new ChatText(ChatText.ROBOT,msg,getTime());
+            chat_list.add(chatText);
             adapter.notifyDataSetChanged();
+            dbManager.addChatText(userid,chatText);//同时添加到数据库中
+            chat_rv.scrollToPosition(chat_list.size() - 1);
         }
     };
 
@@ -444,5 +448,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i(TAG,"onMaxCount() called");
 //        count = 0;
 //        chatCount.setValue(count);//置位
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(this,PushService.class);
+        startService(intent);
+        super.onDestroy();
     }
 }

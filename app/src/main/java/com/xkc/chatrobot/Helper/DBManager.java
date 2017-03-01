@@ -1,4 +1,4 @@
-package com.xkc.chatrobot.Helper;
+package com.xkc.chatrobot.helper;
 
 import android.content.Context;
 import android.database.Cursor;

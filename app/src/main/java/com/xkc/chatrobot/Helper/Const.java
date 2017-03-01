@@ -1,4 +1,4 @@
-package com.xkc.chatrobot.Helper;
+package com.xkc.chatrobot.helper;
 
 /**
  * Created by xkc on 6/18/16.

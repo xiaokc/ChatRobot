@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,7 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.xkc.chatrobot.Helper.Const;
+import com.xkc.chatrobot.helper.Const;
 import com.xkc.chatrobot.R;
 import com.xkc.chatrobot.callbacks.LoginCallback;
 import com.xkc.chatrobot.callbacks.RegisterCallback;
